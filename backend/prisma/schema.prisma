@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -13,8 +13,8 @@ model User {
   passwordHash  String         @map("password_hash")
   fullName      String?        @map("full_name")
   displayName   String?        @map("display_name")
-  avatarUrl     String?        @map("avatar_url")   @db.VarChar(500)
-  bio           String?        @db.Text
+  avatarUrl     String?        @map("avatar_url")
+  bio           String?
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt      @map("updated_at")
 
@@ -29,7 +29,7 @@ model User {
 model RefreshToken {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
-  token     String   @unique @db.VarChar(512)
+  token     String   @unique
   expiresAt DateTime @map("expires_at")
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -38,29 +38,23 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
-enum Difficulty {
-  Easy
-  Medium
-  Hard
-}
-
 model Recipe {
   id           String        @id @default(uuid())
   title        String
-  description  String?       @db.Text
-  imageUrl     String?       @map("image_url")     @db.VarChar(500)
+  description  String?
+  imageUrl     String?       @map("image_url")
   authorId     String?       @map("author_id")
   authorName   String        @default("Anonymous") @map("author_name")
   authorAvatar String?       @map("author_avatar")
-  prepTime     String?       @map("prep_time")     @db.VarChar(50)
-  difficulty   Difficulty    @default(Easy)
-  category     String?       @db.VarChar(100)
-  rating       Decimal       @default(0)           @db.Decimal(3, 1)
+  prepTime     String?       @map("prep_time")
+  difficulty   String        @default("Easy")
+  category     String?
+  rating       Float         @default(0)
   reviewsCount Int           @default(0)           @map("reviews_count")
   likesCount   Int           @default(0)           @map("likes_count")
   servings     Int           @default(1)
   calories     Int           @default(0)
-  youtubeId    String?       @map("youtube_id")    @db.VarChar(50)
+  youtubeId    String?       @map("youtube_id")
   popular      Boolean       @default(false)
   createdAt    DateTime      @default(now())       @map("created_at")
   updatedAt    DateTime      @updatedAt            @map("updated_at")
@@ -79,7 +73,7 @@ model Recipe {
 model Ingredient {
   id       Int    @id @default(autoincrement())
   recipeId String @map("recipe_id")
-  item     String @db.Text
+  item     String
   position Int    @default(0)
 
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
@@ -90,7 +84,7 @@ model Ingredient {
 model Instruction {
   id       Int    @id @default(autoincrement())
   recipeId String @map("recipe_id")
-  step     String @db.Text
+  step     String
   position Int    @default(0)
 
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
@@ -101,8 +95,8 @@ model Instruction {
 model Nutrition {
   id       Int    @id @default(autoincrement())
   recipeId String @map("recipe_id")
-  label    String @db.VarChar(100)
-  value    String @db.VarChar(100)
+  label    String
+  value    String
 
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
@@ -112,7 +106,7 @@ model Nutrition {
 model Tag {
   id       Int    @id @default(autoincrement())
   recipeId String @map("recipe_id")
-  tag      String @db.VarChar(100)
+  tag      String
 
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
@@ -136,7 +130,7 @@ model Comment {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
   recipeId  String   @map("recipe_id")
-  content   String   @db.Text
+  content   String
   rating    Int?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt      @map("updated_at")
