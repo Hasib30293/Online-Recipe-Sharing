@@ -2,12 +2,36 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const categoriesWithImages = [
-  { name: "Breakfast", count: 86, emoji: "🥞", gradient: "from-amber-400 to-orange-500" },
-  { name: "Lunch", count: 124, emoji: "🌮", gradient: "from-green-400 to-emerald-600" },
-  { name: "Dinner", count: 203, emoji: "🍝", gradient: "from-red-400 to-rose-600" },
-  { name: "Desserts", count: 97, emoji: "🍰", gradient: "from-pink-400 to-purple-500" },
-  { name: "Healthy", count: 156, emoji: "🥗", gradient: "from-lime-400 to-green-500" },
-  { name: "Quick & Easy", count: 178, emoji: "🍜", gradient: "from-yellow-400 to-amber-500" },
+  {
+    name: "Breakfast",
+    count: 86,
+    image: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=400&auto=format&fit=crop",
+  },
+  {
+    name: "Lunch",
+    count: 124,
+    image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop",
+  },
+  {
+    name: "Dinner",
+    count: 203,
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&auto=format&fit=crop",
+  },
+  {
+    name: "Desserts",
+    count: 97,
+    image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&auto=format&fit=crop",
+  },
+  {
+    name: "Healthy",
+    count: 156,
+    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&auto=format&fit=crop",
+  },
+  {
+    name: "Quick & Easy",
+    count: 178,
+    image: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=400&auto=format&fit=crop",
+  },
 ];
 
 const CategoryGrid = () => {
@@ -37,11 +61,12 @@ const CategoryGrid = () => {
               onClick={() => navigate(`/recipes?category=${encodeURIComponent(cat.name)}`)}
               className="group relative rounded-card overflow-hidden cursor-pointer aspect-[3/4] shadow-card hover:shadow-card-hover transition-all"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient}`} />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-5xl">{cat.emoji}</span>
-              </div>
+              <img
+                src={cat.image}
+                alt={cat.name}
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
               <div className="absolute bottom-4 left-4 right-4">
                 <h3 className="font-display font-semibold text-base text-white">
                   {cat.name}

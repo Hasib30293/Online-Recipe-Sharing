@@ -1,5 +1,5 @@
-import { useParams, Link } from 'react-router-dom'
-import { Clock, Star, Users, ChefHat, Heart } from 'lucide-react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+import { ArrowLeft, Clock, Star, Users, ChefHat, Heart } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -16,6 +16,7 @@ import { useAuth } from '@/providers/AuthProvider'
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { user } = useAuth()
   const { data: recipe, isLoading } = useRecipe(id!)
   const { data: favoriteIds } = useFavorites()
@@ -43,6 +44,15 @@ export default function RecipeDetailPage() {
 
   return (
     <div className="container py-10">
+      {/* Back button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-6 mt-4 flex items-center gap-1.5 text-sm text-black dark:text-white hover:text-primary dark:hover:text-primary transition-colors font-bold"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        
+      </button>
+
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           {recipe.category && <Badge className="mb-2">{recipe.category}</Badge>}

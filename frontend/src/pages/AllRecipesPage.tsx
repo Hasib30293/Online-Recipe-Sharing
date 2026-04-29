@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import SearchFilter from '@/components/shared/SearchFilter'
 import { RecipeGrid } from '@/components/shared/RecipeGrid'
 import { Button } from '@/components/ui/button'
@@ -9,7 +10,10 @@ import type { RecipeFilters } from '@/features/recipes/types'
 
 export default function AllRecipesPage() {
   const { user } = useAuth()
-  const [filters, setFilters] = useState<RecipeFilters>({ page: 1, limit: 12 })
+  const [searchParams] = useSearchParams()
+  const initialCategory = searchParams.get('category') ?? undefined
+  const initialAuthor = searchParams.get('author') ?? undefined
+  const [filters, setFilters] = useState<RecipeFilters>({ page: 1, limit: 12, category: initialCategory, authorId: initialAuthor })
   const { data, isLoading } = useRecipes(filters)
   const { data: favoriteIds } = useFavorites()
   const { mutate: toggleFavorite } = useToggleFavorite()
@@ -18,8 +22,12 @@ export default function AllRecipesPage() {
   const meta = data?.meta
 
   return (
-    <div className="container py-10">
-      <h1 className="mb-6 font-display text-3xl font-bold">All Recipes</h1>
+    <div className="container py-16">
+      <h1 className="mb-0 font-display text-4xl font-bold text-center text-primary">
+        {initialAuthor
+          ? (recipes?.[0]?.authorName ? `${recipes[0].authorName}'s Recipes` : 'Creator Recipes')
+          : 'All Recipes'}
+      </h1>
 
       <SearchFilter
         filters={filters}

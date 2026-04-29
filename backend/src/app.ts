@@ -24,7 +24,11 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
 // Static file serving for local uploads
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
+// Allow cross-origin image loading (frontend is on a different port/origin)
+app.use('/uploads', (_req, res, next) => {
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
+  next()
+}, express.static(path.join(process.cwd(), 'uploads')))
 
 // API routes
 app.use('/api/v1', apiRouter)

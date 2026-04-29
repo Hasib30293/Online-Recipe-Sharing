@@ -45,6 +45,7 @@ export const recipeQuerySchema = z.object({
     category: z.string().optional(),
     difficulty: z.enum(['Easy', 'Medium', 'Hard']).optional(),
     sort: z.enum(['newest', 'popular', 'rating']).optional(),
+    authorId: z.string().uuid().optional(),
     page: z.string().optional().default('1').transform(Number),
     limit: z.string().optional().default('12').transform(Number),
   }),
