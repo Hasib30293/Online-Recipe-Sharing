@@ -33,7 +33,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       await signUp(values)
       onSuccess?.()
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Registration failed'
+      const msg = (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Registration failed'
       setError('root', { message: msg })
     }
   }

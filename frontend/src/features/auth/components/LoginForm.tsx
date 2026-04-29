@@ -32,7 +32,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       await signIn(values)
       onSuccess?.()
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Login failed'
+      const msg = (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ?? 'Login failed'
       setError('root', { message: msg })
     }
   }
