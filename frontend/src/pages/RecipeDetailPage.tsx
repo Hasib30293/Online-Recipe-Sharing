@@ -72,7 +72,7 @@ export default function RecipeDetailPage() {
         {recipe.prepTime && (
           <span className="flex items-center gap-1"><Clock className="h-4 w-4" />{recipe.prepTime}</span>
         )}
-        <span className="flex items-center gap-1"><Star className="h-4 w-4 fill-amber-400 text-amber-400" />{recipe.rating.toFixed(1)} ({recipe.reviewsCount})</span>
+        <span className="flex items-center gap-1"><Star className="h-4 w-4 fill-amber-400 text-amber-400" />{Number(recipe.rating).toFixed(1)} ({recipe.reviewsCount})</span>
         <span className="flex items-center gap-1"><Users className="h-4 w-4" />{recipe.servings} servings</span>
         <Badge variant="outline">{recipe.difficulty}</Badge>
         {recipe.authorName && (

@@ -150,7 +150,7 @@ const HeroSection = () => {
                     whileHover={{ scale: 1.3, zIndex: 20 }}
                     transition={{ type: "spring", stiffness: 200, damping: 20 }}
                   >
-                    <img src={resolveRecipeImage(recipe.image_url)} alt={recipe.title} className="w-full h-full object-cover" />
+                    <img src={resolveRecipeImage(recipe.imageUrl)} alt={recipe.title} className="w-full h-full object-cover" />
                   </motion.button>
                 );
               })}
@@ -166,17 +166,17 @@ const HeroSection = () => {
                   transition={{ type: "spring", stiffness: 120, damping: 18, mass: 0.8 }}
                 >
                   <div className="w-[280px] h-[280px] lg:w-[300px] lg:h-[300px] rounded-full overflow-hidden img-outline shadow-card-hover">
-                    <img src={resolveRecipeImage(activeRecipe.image_url)} alt={activeRecipe.title} className="w-full h-full object-cover" />
+                    <img src={resolveRecipeImage(activeRecipe.imageUrl)} alt={activeRecipe.title} className="w-full h-full object-cover" />
                   </div>
 
                   <motion.div initial={{ opacity: 0, scale: 0.5, x: 20 }} animate={{ opacity: 1, scale: 1, x: 0 }} exit={{ opacity: 0, scale: 0.5 }} transition={{ delay: 0.3, type: "spring", stiffness: 200, damping: 15 }} className="absolute -top-2 -left-8 bg-card border border-border rounded-xl px-3 py-2 shadow-card flex items-center gap-2">
                     <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center"><Clock className="w-3.5 h-3.5 text-primary" /></div>
-                    <div><p className="text-[10px] text-muted-foreground">Prep Time</p><p className="text-xs font-semibold text-foreground">{activeRecipe.prep_time}</p></div>
+                    <div><p className="text-[10px] text-muted-foreground">Prep Time</p><p className="text-xs font-semibold text-foreground">{activeRecipe.prepTime}</p></div>
                   </motion.div>
 
                   <motion.div initial={{ opacity: 0, scale: 0.5, x: -20 }} animate={{ opacity: 1, scale: 1, x: 0 }} exit={{ opacity: 0, scale: 0.5 }} transition={{ delay: 0.4, type: "spring", stiffness: 200, damping: 15 }} className="absolute -top-2 -right-6 bg-card border border-border rounded-xl px-3 py-2 shadow-card flex items-center gap-2">
                     <div className="w-7 h-7 rounded-full bg-accent/10 flex items-center justify-center"><Star className="w-3.5 h-3.5 text-accent" /></div>
-                    <div><p className="text-[10px] text-muted-foreground">Rating</p><p className="text-xs font-semibold text-foreground">{activeRecipe.rating}</p></div>
+                    <div><p className="text-[10px] text-muted-foreground">Rating</p><p className="text-xs font-semibold text-foreground">{Number(activeRecipe.rating).toFixed(1)}</p></div>
                   </motion.div>
 
                   <motion.div initial={{ opacity: 0, scale: 0.5, y: -20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.5 }} transition={{ delay: 0.5, type: "spring", stiffness: 200, damping: 15 }} className="absolute bottom-4 -right-10 bg-card border border-border rounded-xl px-3 py-2 shadow-card flex items-center gap-2">

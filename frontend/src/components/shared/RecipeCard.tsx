@@ -73,7 +73,7 @@ export function RecipeCard({ recipe, isFavorited, onToggleFavorite, className }:
             )}
             <span className="flex items-center gap-1">
               <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-              {recipe.rating.toFixed(1)}
+              {Number(recipe.rating).toFixed(1)}
             </span>
             <Badge variant="outline" className="py-0 text-xs">
               {recipe.difficulty}
