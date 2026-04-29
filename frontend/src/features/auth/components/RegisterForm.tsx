@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2 } from 'lucide-react'
+import { Loader2, User, Mail, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -42,19 +42,48 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="fullName">Full Name</Label>
-        <Input id="fullName" autoComplete="name" {...register('fullName')} />
+        <div className="relative">
+          <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            id="fullName"
+            autoComplete="name"
+            placeholder="Your name"
+            className="pl-9"
+            {...register('fullName')}
+          />
+        </div>
         {errors.fullName && <p className="text-xs text-destructive">{errors.fullName.message}</p>}
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="reg-email">Email</Label>
-        <Input id="reg-email" type="email" autoComplete="email" {...register('email')} />
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            id="reg-email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            className="pl-9"
+            {...register('email')}
+          />
+        </div>
         {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="reg-password">Password</Label>
-        <Input id="reg-password" type="password" autoComplete="new-password" {...register('password')} />
+        <div className="relative">
+          <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            id="reg-password"
+            type="password"
+            autoComplete="new-password"
+            placeholder="••••••••"
+            className="pl-9"
+            {...register('password')}
+          />
+        </div>
         {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
       </div>
 
@@ -62,7 +91,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Create account
+        Create Account
       </Button>
     </form>
   )

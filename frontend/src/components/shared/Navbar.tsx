@@ -5,7 +5,6 @@ import {
   LogOut,
   Menu,
   PlusCircle,
-  Search,
   UserRound,
   X,
 } from "lucide-react";
@@ -255,7 +254,7 @@ const Navbar = () => {
               </button>
               <button
                 type="button"
-                onClick={() => navigate("/auth")}
+                onClick={() => navigate("/auth?tab=register")}
                 className="h-9 px-5 text-sm font-medium bg-primary text-primary-foreground rounded-full hover:opacity-90 transition-opacity"
               >
                 Sign Up
@@ -356,7 +355,7 @@ const Navbar = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleNavigate("/auth")}
+                    onClick={() => handleNavigate("/auth?tab=register")}
                     className="flex-1 h-10 text-sm font-medium bg-primary text-primary-foreground rounded-full"
                   >
                     Sign Up
