@@ -1,9 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/axios'
 import type { ApiResponse } from '@/types/api'
+import type { Recipe } from '@/features/recipes/types'
 
 export const favoriteKeys = {
   all: ['favorites'] as const,
+  recipes: () => [...favoriteKeys.all, 'recipes'] as const,
 }
 
 export function useFavorites() {
@@ -11,6 +13,16 @@ export function useFavorites() {
     queryKey: favoriteKeys.all,
     queryFn: async () => {
       const res = await api.get<ApiResponse<string[]>>('/favorites')
+      return res.data.data
+    },
+  })
+}
+
+export function useFavoriteRecipes() {
+  return useQuery({
+    queryKey: favoriteKeys.recipes(),
+    queryFn: async () => {
+      const res = await api.get<ApiResponse<Recipe[]>>('/favorites/recipes')
       return res.data.data
     },
   })

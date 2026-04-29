@@ -13,6 +13,7 @@ const CommunityPage = lazy(() => import('@/pages/CommunityPage'))
 const PostRecipePage = lazy(() => import('@/pages/PostRecipePage'))
 const MyRecipesPage = lazy(() => import('@/pages/MyRecipesPage'))
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'))
+const SavedRecipesPage = lazy(() => import('@/pages/SavedRecipesPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 const wrap = (element: React.ReactNode) => (
@@ -48,6 +49,14 @@ export const router = createBrowserRouter([
         element: wrap(
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>,
+        ),
+      },
+      {
+        path: '/saved-recipes',
+        element: wrap(
+          <ProtectedRoute>
+            <SavedRecipesPage />
           </ProtectedRoute>,
         ),
       },

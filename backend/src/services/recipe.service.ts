@@ -33,7 +33,7 @@ interface CreateRecipeInput {
   authorAvatar?: string
 }
 
-const recipeSelect = {
+export const recipeSelect = {
   id: true,
   title: true,
   description: true,

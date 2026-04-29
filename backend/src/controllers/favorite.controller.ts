@@ -15,3 +15,8 @@ export async function removeFavorite(req: Request, res: Response): Promise<void>
   await favoriteService.removeFavorite(req.user!.userId, req.params.recipeId)
   res.json({ success: true, data: null })
 }
+
+export async function getFavoriteRecipes(req: Request, res: Response): Promise<void> {
+  const recipes = await favoriteService.getFavoriteRecipes(req.user!.userId)
+  res.json({ success: true, data: recipes })
+}
