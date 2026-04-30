@@ -8,6 +8,7 @@ interface RecipeFilters {
   category?: string
   difficulty?: 'Easy' | 'Medium' | 'Hard'
   sort?: 'newest' | 'popular' | 'rating'
+  authorId?: string
   page: number
   limit: number
 }
@@ -32,7 +33,7 @@ interface CreateRecipeInput {
   authorAvatar?: string
 }
 
-const recipeSelect = {
+export const recipeSelect = {
   id: true,
   title: true,
   description: true,
@@ -72,6 +73,7 @@ export async function listRecipes(filters: RecipeFilters) {
   }
   if (filters.category) where.category = { equals: filters.category }
   if (filters.difficulty) where.difficulty = filters.difficulty
+  if (filters.authorId) where.authorId = filters.authorId
 
   const orderBy: Prisma.RecipeOrderByWithRelationInput =
     filters.sort === 'popular'

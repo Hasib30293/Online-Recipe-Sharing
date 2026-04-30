@@ -5,7 +5,6 @@ import {
   LogOut,
   Menu,
   PlusCircle,
-  Search,
   UserRound,
   X,
 } from "lucide-react";
@@ -29,8 +28,8 @@ import cookbookLogoDark from "@/assets/CookBook_logo_cropped_dark.png";
 
 const navLinks = [
   { label: "Home", href: "/", section: "home" },
-  { label: "Recipes", href: "/recipes", section: "" },
-  { label: "Community", href: "/community", section: "" },
+  { label: "Recipes", href: "/recipes", section: "recipes" },
+  { label: "Community", href: "/community", section: "community" },
   { label: "About", href: "/#about", section: "about" },
 ];
 
@@ -130,12 +129,17 @@ const Navbar = () => {
     .toUpperCase()
     .slice(0, 2);
 
-  const isNavItemActive = (section: string) => {
-    if (location.pathname !== "/") {
-      return section === "home" && location.pathname === "/";
+  const isNavItemActive = (section: string, href: string) => {
+    // Hash-based links (e.g. /#about): active only on home with matching section
+    if (href.startsWith("/#")) {
+      return location.pathname === "/" && activeSection === section;
     }
-
-    return activeSection === section;
+    // Home exact match
+    if (href === "/") {
+      return location.pathname === "/";
+    }
+    // Other pages: active when pathname starts with href
+    return location.pathname.startsWith(href);
   };
 
   const handleNavigate = (href: string) => {
@@ -155,7 +159,8 @@ const Navbar = () => {
           : "bg-[#F2EEE8] dark:bg-transparent"
       }`}
     >
-      <div className="container mx-auto flex items-center justify-between h-20 px-4 lg:px-8">
+      <div className="container mx-auto grid h-20 grid-cols-3 items-center px-4 lg:px-8">
+        {/* Left – logo */}
         <Link to="/" className="flex items-center">
           <img
             src={cookbookLogo}
@@ -171,7 +176,8 @@ const Navbar = () => {
           />
         </Link>
 
-        <div className="hidden md:flex items-center gap-8 translate-y-1">
+        {/* Centre – nav links */}
+        <div className="hidden md:flex items-center justify-center gap-8">
           {navLinks.map((link) => (
             <button
               key={link.section}
@@ -179,7 +185,7 @@ const Navbar = () => {
               onClick={() => handleNavigate(link.href)}
               className={cn(
                 "text-sm font-medium transition-colors hover:text-primary",
-                isNavItemActive(link.section) ? "text-primary" : "text-muted-foreground",
+                isNavItemActive(link.section, link.href) ? "text-primary" : "text-black dark:text-white",
               )}
             >
               {link.label}
@@ -187,14 +193,8 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => handleNavigate("/#recipes")}
-            className="p-2 rounded-full hover:bg-secondary transition-colors"
-          >
-            <Search className="w-4 h-4 text-muted-foreground" />
-          </button>
+        {/* Right – actions */}
+        <div className="hidden md:flex items-center justify-end gap-3">
           <ThemeToggle />
           {loading ? (
             <AuthActionsSkeleton />
@@ -254,7 +254,7 @@ const Navbar = () => {
               </button>
               <button
                 type="button"
-                onClick={() => navigate("/auth")}
+                onClick={() => navigate("/auth?tab=register")}
                 className="h-9 px-5 text-sm font-medium bg-primary text-primary-foreground rounded-full hover:opacity-90 transition-opacity"
               >
                 Sign Up
@@ -265,7 +265,7 @@ const Navbar = () => {
 
         <button
           type="button"
-          className="md:hidden p-2"
+          className="md:hidden col-start-3 justify-self-end p-2"
           onClick={() => setMobileOpen((open) => !open)}
           aria-expanded={mobileOpen}
           aria-label="Toggle navigation menu"
@@ -290,9 +290,9 @@ const Navbar = () => {
                   onClick={() => handleNavigate(link.href)}
                   className={cn(
                     "block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium transition-colors",
-                    isNavItemActive(link.section)
+                    isNavItemActive(link.section, link.href)
                       ? "bg-primary/10 text-primary"
-                      : "text-foreground hover:bg-secondary",
+                      : "text-black dark:text-white hover:bg-secondary",
                   )}
                 >
                   {link.label}
@@ -355,7 +355,7 @@ const Navbar = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleNavigate("/auth")}
+                    onClick={() => handleNavigate("/auth?tab=register")}
                     className="flex-1 h-10 text-sm font-medium bg-primary text-primary-foreground rounded-full"
                   >
                     Sign Up

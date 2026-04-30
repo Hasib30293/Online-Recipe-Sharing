@@ -111,7 +111,7 @@ const HeroSection = () => {
 
             <div className="flex items-center gap-3">
               <button
-                onClick={() => navigate(`/recipe/${activeRecipe.id}`)}
+                onClick={() => navigate(`/recipes/${activeRecipe.id}`)}
                 className="h-12 px-8 bg-primary text-primary-foreground font-semibold rounded-full hover:opacity-90 transition-opacity text-sm"
               >
                 Explore Recipe

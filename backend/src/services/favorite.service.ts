@@ -1,5 +1,6 @@
 import prisma from '../prisma/client'
 import { AppError } from '../utils/AppError'
+import { recipeSelect } from './recipe.service'
 
 export async function getFavoriteIds(userId: string): Promise<string[]> {
   const favorites = await prisma.favorite.findMany({
@@ -23,4 +24,13 @@ export async function addFavorite(userId: string, recipeId: string) {
 
 export async function removeFavorite(userId: string, recipeId: string) {
   await prisma.favorite.deleteMany({ where: { userId, recipeId } })
+}
+
+export async function getFavoriteRecipes(userId: string) {
+  const favorites = await prisma.favorite.findMany({
+    where: { userId },
+    include: { recipe: { select: recipeSelect } },
+    orderBy: { createdAt: 'desc' },
+  })
+  return favorites.map((f: { recipe: any }) => f.recipe)
 }

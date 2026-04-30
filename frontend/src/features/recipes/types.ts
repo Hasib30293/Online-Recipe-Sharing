@@ -56,6 +56,7 @@ export interface RecipeFilters {
   category?: string
   difficulty?: 'Easy' | 'Medium' | 'Hard'
   sort?: 'newest' | 'popular' | 'rating'
+  authorId?: string
   page?: number
   limit?: number
 }
