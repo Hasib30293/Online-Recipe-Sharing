@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { ChevronLeft, ChevronRight, Clock, Star, ChefHat, PlusCircle } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight, PlusCircle, Clock, Star, ChefHat } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useRecipes } from "@/hooks/useRecipes";
 import { resolveRecipeImage } from "@/lib/recipe-images";
@@ -9,19 +9,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 const HeroSection = () => {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
-  const sectionRef = useRef<HTMLElement>(null);
   const { data: allRecipes = [] } = useRecipes();
 
   const heroRecipes = useMemo(() => allRecipes.slice(0, 7), [allRecipes]);
   const activeRecipe = heroRecipes[activeIndex] ?? null;
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-  const blobY = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, -40]);
-  const orbitY = useTransform(scrollYProgress, [0, 1], [0, 60]);
 
   const next = useCallback(() => {
     if (heroRecipes.length === 0) return;
@@ -41,16 +32,17 @@ const HeroSection = () => {
   useEffect(() => {
     const timer = setInterval(next, 5000);
     return () => clearInterval(timer);
-  }, [next, activeIndex]);
+  }, [next]);
 
   const orbitPositions = useMemo(() => {
     const count = heroRecipes.length || 1;
     const arcStart = -Math.PI * 0.85;
     const arcEnd = -Math.PI * 0.15;
     return heroRecipes.map((_, i) => {
-      const angle = arcStart + (arcEnd - arcStart) * (i / (count - 1));
+      const t = count === 1 ? 0.5 : i / (count - 1);
+      const angle = arcStart + (arcEnd - arcStart) * t;
       const rx = 300, ry = 170, cx = 50, cy = 55;
-      return { x: cx + rx * Math.cos(angle), y: cy + ry * Math.sin(angle), angle };
+      return { x: cx + rx * Math.cos(angle), y: cy + ry * Math.sin(angle) };
     });
   }, [heroRecipes.length]);
 
@@ -71,25 +63,28 @@ const HeroSection = () => {
     return (
       <section className="relative pt-24 pb-8 lg:pt-28 lg:pb-16">
         <div className="container mx-auto px-4 lg:px-8">
-          <Skeleton className="h-[400px] w-full rounded-card" />
+          <Skeleton className="h-[400px] w-full rounded-2xl" />
         </div>
       </section>
     );
   }
 
   return (
-    <section ref={sectionRef} className="relative pt-24 pb-8 lg:pt-28 lg:pb-16 overflow-hidden">
-      <motion.div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ y: blobY }}>
+    <section className="relative pt-24 pb-8 lg:pt-28 lg:pb-16">
+      {/* Background blobs — overflow clipped here so the section itself doesn't clip tooltip children */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/3 w-[700px] h-[700px] lg:w-[1000px] lg:h-[900px] rounded-full bg-secondary/60 blur-3xl" />
         <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-primary/5 blur-2xl" />
-      </motion.div>
+      </div>
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-4 items-center min-h-[520px]">
-          <motion.div className="lg:col-span-5 space-y-6 z-10" style={{ y: contentY }}>
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm font-medium text-primary uppercase tracking-wider">
+
+          {/* Left — text content */}
+          <div className="lg:col-span-5 space-y-6 z-10">
+            <p className="text-sm font-medium text-primary uppercase tracking-wider">
               Dish of the Day
-            </motion.p>
+            </p>
 
             <AnimatePresence mode="wait">
               <motion.div
@@ -123,19 +118,51 @@ const HeroSection = () => {
                 <PlusCircle className="w-4 h-4" /> Post a recipe
               </button>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div className="lg:col-span-7 relative flex flex-col items-center" style={{ y: orbitY }}>
+          {/* Right — arc carousel */}
+          <div className="lg:col-span-7 relative flex flex-col items-center">
             <div className="relative w-full" style={{ paddingBottom: "85%" }}>
-              <svg viewBox="-300 -170 700 400" className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="xMidYMid meet">
-                <path d={arcPath} fill="none" stroke="hsl(var(--border))" strokeWidth="1.5" strokeDasharray="6 6" opacity="0.7" />
-                {orbitPositions.map((pos, i) => (
-                  <circle key={`dot-${i}`} cx={pos.x} cy={pos.y} r={i === activeIndex ? 0 : 3} fill="hsl(var(--primary))" opacity={i === activeIndex ? 0 : 0.3} />
+
+              {/* Arc guide line + decorative dots */}
+              <svg
+                viewBox="-300 -170 700 400"
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                preserveAspectRatio="xMidYMid meet"
+              >
+                {/* Outer glow track */}
+                {/* <path
+                  d={arcPath}
+                  fill="none"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth="6"
+                  opacity="0.06"
+                /> */}
+                {/* Main dashed track */}
+                <path
+                  d={arcPath}
+                  fill="none"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1.5"
+                  strokeDasharray="5 8"
+                  opacity="0.55"
+                />
+                {/* Static sparkle dots scattered near the arc */}
+                {[{cx:-228,cy:-108,r:2.5},{cx:-80,cy:-160,r:2},{cx:80,cy:-155,r:3},{cx:230,cy:-95,r:2.5},{cx:320,cy:-10,r:2},{cx:-310,cy:10,r:2}].map((d,i)=>(
+                  <motion.circle
+                    key={i}
+                    cx={d.cx} cy={d.cy} r={d.r}
+                    fill="hsl(var(--primary))"
+                    initial={{ opacity: 0.15, scale: 1 }}
+                    animate={{ opacity: [0.15, 0.55, 0.15], scale: [1, 1.4, 1] }}
+                    transition={{ duration: 2.4 + i * 0.5, repeat: Infinity, delay: i * 0.35, ease: "easeInOut" }}
+                  />
                 ))}
               </svg>
 
+              {/* All orbit thumbnails — active stays visible with ring highlight */}
               {heroRecipes.map((recipe, i) => {
-                if (i === activeIndex) return null;
+                const isActive = i === activeIndex;
                 const pos = orbitPositions[i];
                 const leftPct = (pos.x + 300) / 700 * 100;
                 const topPct = (pos.y + 170) / 400 * 100;
@@ -143,62 +170,147 @@ const HeroSection = () => {
                   <motion.button
                     key={recipe.id}
                     onClick={() => setActiveIndex(i)}
-                    className="absolute rounded-full overflow-hidden img-outline shadow-card cursor-pointer z-10"
+                    className="absolute group cursor-pointer focus-visible:outline-none"
                     style={{ left: `${leftPct}%`, top: `${topPct}%` }}
                     initial={false}
-                    animate={{ width: 68, height: 68, x: "-50%", y: "-50%", opacity: 1 }}
-                    whileHover={{ scale: 1.3, zIndex: 20 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    animate={{
+                      width: isActive ? 84 : 62,
+                      height: isActive ? 84 : 62,
+                      x: "-50%",
+                      y: "-50%",
+                      opacity: isActive ? 1 : 0.6,
+                      zIndex: isActive ? 15 : 10,
+                    }}
+                    whileHover={{ scale: 1.2, opacity: 1, zIndex: 20 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 24 }}
                   >
-                    <img src={resolveRecipeImage(recipe.imageUrl)} alt={recipe.title} className="w-full h-full object-cover" />
+                    {/* Thumbnail image */}
+                    <div
+                      className={`w-full h-full rounded-full overflow-hidden transition-all duration-200 ${
+                        isActive
+                          ? "ring-[3px] ring-primary shadow-[0_0_0_6px_hsl(var(--primary)/0.18)]"
+                          : "ring-1 ring-border/70 group-hover:ring-primary/50"
+                      }`}
+                    >
+                      <img
+                        src={resolveRecipeImage(recipe.imageUrl)}
+                        alt={recipe.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    {/* Name tooltip — appears above thumbnail on hover */}
+                    <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap bg-popover border border-border text-popover-foreground text-[11px] font-medium px-2.5 py-1 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-30 max-w-[140px] truncate">
+                      {recipe.title}
+                    </span>
                   </motion.button>
                 );
               })}
 
+              {/* Large centered active image + floating badges */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeRecipe.id}
                   className="absolute z-20"
                   style={{ left: "50%", top: "62%" }}
-                  initial={{ scale: 0.3, opacity: 0, x: "-50%", y: "-120%" }}
+                  initial={{ scale: 0.85, opacity: 0, x: "-50%", y: "-50%" }}
                   animate={{ scale: 1, opacity: 1, x: "-50%", y: "-50%" }}
-                  exit={{ scale: 0.4, opacity: 0, x: "-50%", y: "-50%" }}
-                  transition={{ type: "spring", stiffness: 120, damping: 18, mass: 0.8 }}
+                  exit={{ scale: 0.85, opacity: 0, x: "-50%", y: "-50%" }}
+                  transition={{ type: "spring", stiffness: 160, damping: 20 }}
                 >
-                  <div className="w-[280px] h-[280px] lg:w-[300px] lg:h-[300px] rounded-full overflow-hidden img-outline shadow-card-hover">
-                    <img src={resolveRecipeImage(activeRecipe.imageUrl)} alt={activeRecipe.title} className="w-full h-full object-cover" />
+                  {/* Pulsing glow ring behind image */}
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.08, 0.35] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ background: "radial-gradient(circle, hsl(var(--primary)/0.4) 0%, transparent 70%)" }}
+                  />
+
+                  <div className="relative w-[280px] h-[280px] lg:w-[310px] lg:h-[310px] rounded-full overflow-hidden ring-4 ring-primary/25 shadow-2xl">
+                    <img
+                      src={resolveRecipeImage(activeRecipe.imageUrl)}
+                      alt={activeRecipe.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
-                  <motion.div initial={{ opacity: 0, scale: 0.5, x: 20 }} animate={{ opacity: 1, scale: 1, x: 0 }} exit={{ opacity: 0, scale: 0.5 }} transition={{ delay: 0.3, type: "spring", stiffness: 200, damping: 15 }} className="absolute -top-2 -left-8 bg-card border border-border rounded-xl px-3 py-2 shadow-card flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center"><Clock className="w-3.5 h-3.5 text-primary" /></div>
-                    <div><p className="text-[10px] text-muted-foreground">Prep Time</p><p className="text-xs font-semibold text-foreground">{activeRecipe.prepTime}</p></div>
+                  {/* Badge — Prep Time (top-left) */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -12, y: 8 }}
+                    animate={{ opacity: 1, x: 0, y: 0 }}
+                    exit={{ opacity: 0, x: -12 }}
+                    transition={{ delay: 0.25, type: "spring", stiffness: 220, damping: 18 }}
+                    className="absolute -top-3 -left-10 bg-card/90 backdrop-blur-sm border border-border rounded-2xl px-3 py-2 shadow-lg flex items-center gap-2 min-w-[100px]"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Clock className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground leading-none">Prep Time</p>
+                      <p className="text-xs font-semibold text-foreground mt-0.5">{activeRecipe.prepTime}</p>
+                    </div>
                   </motion.div>
 
-                  <motion.div initial={{ opacity: 0, scale: 0.5, x: -20 }} animate={{ opacity: 1, scale: 1, x: 0 }} exit={{ opacity: 0, scale: 0.5 }} transition={{ delay: 0.4, type: "spring", stiffness: 200, damping: 15 }} className="absolute -top-2 -right-6 bg-card border border-border rounded-xl px-3 py-2 shadow-card flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-accent/10 flex items-center justify-center"><Star className="w-3.5 h-3.5 text-accent" /></div>
-                    <div><p className="text-[10px] text-muted-foreground">Rating</p><p className="text-xs font-semibold text-foreground">{Number(activeRecipe.rating).toFixed(1)}</p></div>
+                  {/* Badge — Rating (top-right) */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 12, y: 8 }}
+                    animate={{ opacity: 1, x: 0, y: 0 }}
+                    exit={{ opacity: 0, x: 12 }}
+                    transition={{ delay: 0.35, type: "spring", stiffness: 220, damping: 18 }}
+                    className="absolute -top-3 -right-10 bg-card/90 backdrop-blur-sm border border-border rounded-2xl px-3 py-2 shadow-lg flex items-center gap-2 min-w-[90px]"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0">
+                      <Star className="w-3.5 h-3.5 text-amber-500" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground leading-none">Rating</p>
+                      <p className="text-xs font-semibold text-foreground mt-0.5">{Number(activeRecipe.rating).toFixed(1)}</p>
+                    </div>
                   </motion.div>
 
-                  <motion.div initial={{ opacity: 0, scale: 0.5, y: -20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.5 }} transition={{ delay: 0.5, type: "spring", stiffness: 200, damping: 15 }} className="absolute bottom-4 -right-10 bg-card border border-border rounded-xl px-3 py-2 shadow-card flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center"><ChefHat className="w-3.5 h-3.5 text-primary" /></div>
-                    <div><p className="text-[10px] text-muted-foreground">Difficulty</p><p className="text-xs font-semibold text-foreground">{activeRecipe.difficulty}</p></div>
+                  {/* Badge — Difficulty (bottom-right) */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 12 }}
+                    transition={{ delay: 0.45, type: "spring", stiffness: 220, damping: 18 }}
+                    className="absolute bottom-2 -right-12 bg-card/90 backdrop-blur-sm border border-border rounded-2xl px-3 py-2 shadow-lg flex items-center gap-2 min-w-[100px]"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <ChefHat className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground leading-none">Difficulty</p>
+                      <p className="text-xs font-semibold text-foreground mt-0.5">{activeRecipe.difficulty}</p>
+                    </div>
                   </motion.div>
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            <div className="flex items-center -mt-8 z-30 py-0 gap-[113px]">
-              <motion.button onClick={prev} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="w-10 h-10 rounded-full border border-border bg-background flex items-center justify-center text-foreground hover:border-primary transition-colors">
+            {/* Prev / counter / Next */}
+            <div className="flex items-center -mt-8 z-30 gap-[113px]">
+              <motion.button
+                onClick={prev}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-10 h-10 rounded-full border border-border bg-background flex items-center justify-center text-foreground hover:border-primary transition-colors shadow-sm"
+              >
                 <ChevronLeft className="w-5 h-5" />
               </motion.button>
               <span className="text-xs text-muted-foreground tabular-nums">
                 {activeIndex + 1} / {heroRecipes.length}
               </span>
-              <motion.button onClick={next} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="w-10 h-10 rounded-full border border-border bg-background flex items-center justify-center text-foreground hover:border-primary transition-colors">
+              <motion.button
+                onClick={next}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-10 h-10 rounded-full border border-border bg-background flex items-center justify-center text-foreground hover:border-primary transition-colors shadow-sm"
+              >
                 <ChevronRight className="w-5 h-5" />
               </motion.button>
             </div>
-          </motion.div>
+          </div>
+
         </div>
       </div>
     </section>
