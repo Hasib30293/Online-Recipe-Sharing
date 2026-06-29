@@ -139,9 +139,14 @@ export async function listRecipes(filters: RecipeFilters) {
   if (filters.difficulty) where.difficulty = filters.difficulty
   if (filters.authorId) where.authorId = filters.authorId
 
-  const orderBy: Prisma.RecipeOrderByWithRelationInput =
+  const orderBy: Prisma.RecipeOrderByWithRelationInput | Prisma.RecipeOrderByWithRelationInput[] =
     filters.sort === 'popular'
-      ? { likesCount: 'desc' }
+      ? [
+          { likesCount: 'desc' },
+          { reviewsCount: 'desc' },
+          { rating: 'desc' },
+          { createdAt: 'desc' },
+        ]
       : filters.sort === 'rating'
       ? { rating: 'desc' }
       : { createdAt: 'desc' }
@@ -157,8 +162,12 @@ export async function listRecipes(filters: RecipeFilters) {
 
 export async function getPopularRecipes() {
   return prisma.recipe.findMany({
-    where: { popular: true },
-    orderBy: { rating: 'desc' },
+    orderBy: [
+      { likesCount: 'desc' },
+      { reviewsCount: 'desc' },
+      { rating: 'desc' },
+      { createdAt: 'desc' },
+    ],
     take: 8,
     select: recipeSelect,
   })
